@@ -6,4 +6,4 @@ https://github.com/KaiyangZhou/deep-person-reid
 
 # Pose-Normalization
 https://github.com/naiq/PN_GAN.git
-
+Paper Link : http://openaccess.thecvf.com/content_ECCV_2018/papers/Xuelin_Qian_Pose-Normalized_Image_Generation_ECCV_2018_paper.pdf
