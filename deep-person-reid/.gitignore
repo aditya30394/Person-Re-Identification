@@ -1,6 +1,5 @@
 # Custom
 data/
-log/
 saved-models/
 torchreid/eval_lib/eval.c
 .idea
