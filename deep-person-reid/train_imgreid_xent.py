@@ -8,6 +8,7 @@ import datetime
 import argparse
 import os.path as osp
 import numpy as np
+import pickle
 
 import torch
 import torch.nn as nn
@@ -28,6 +29,7 @@ from torchreid.utils.reidtools import visualize_ranked_results
 from torchreid.eval_metrics import evaluate
 from torchreid.optimizers import init_optim
 
+from functools import partial
 
 parser = argparse.ArgumentParser(description='Train image model with cross entropy loss')
 # Datasets
@@ -195,7 +197,9 @@ def main():
         print("Loaded pretrained weights from '{}'".format(args.load_weights))
 
     if args.resume and check_isfile(args.resume):
-        checkpoint = torch.load(args.resume)
+        pickle.load = partial(pickle.load, encoding="latin1")
+        pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
+        checkpoint = torch.load(args.resume, pickle_module=pickle)
         model.load_state_dict(checkpoint['state_dict'])
         args.start_epoch = checkpoint['epoch'] + 1
         best_rank1 = checkpoint['rank1']
