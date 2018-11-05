@@ -29,6 +29,8 @@ from torchreid.utils.reidtools import visualize_ranked_results
 from torchreid.eval_metrics import evaluate
 from torchreid.optimizers import init_optim
 
+from random_erasing import RandomErasing
+
 from functools import partial
 
 parser = argparse.ArgumentParser(description='Train image model with cross entropy loss')
@@ -104,6 +106,8 @@ parser.add_argument('--use-avai-gpus', action='store_true',
                     help="use available gpus instead of specified devices (this is useful when using managed clusters)")
 parser.add_argument('--visualize-ranks', action='store_true',
                     help="visualize ranked results, only available in evaluation mode (default: False)")
+parser.add_argument('--erasing_p', default=0, type=float, 
+                    help='Random Erasing probability, in [0,1]')
 
 # global variables
 args = parser.parse_args()
@@ -147,6 +151,9 @@ def main():
         T.ToTensor(),
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
+    
+    if opt.erasing_p>0:
+      transform_train_list = transform_train_list +  [RandomErasing(probability = opt.erasing_p, mean=[0.0, 0.0, 0.0])]
 
     pin_memory = True if use_gpu else False
 
