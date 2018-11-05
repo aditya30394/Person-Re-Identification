@@ -152,8 +152,8 @@ def main():
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
     
-    if opt.erasing_p>0:
-      transform_train_list = transform_train_list +  [RandomErasing(probability = opt.erasing_p, mean=[0.0, 0.0, 0.0])]
+    if args.erasing_p>0:
+      transform_train_list = transform_train_list +  [RandomErasing(probability = args.erasing_p, mean=[0.0, 0.0, 0.0])]
 
     pin_memory = True if use_gpu else False
 
