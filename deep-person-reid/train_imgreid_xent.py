@@ -139,7 +139,7 @@ def main():
         cuhk03_labeled=args.cuhk03_labeled, cuhk03_classic_split=args.cuhk03_classic_split,
     )
 
-    transform_train = T.Compose([
+    transform_train_list = ([
         T.Random2DTranslation(args.height, args.width),
         T.RandomHorizontalFlip(),
         T.ToTensor(),
@@ -153,8 +153,10 @@ def main():
     ])
     
     if args.erasing_p>0:
-      transform_train = transform_train +  [RandomErasing(probability = args.erasing_p, mean=[0.0, 0.0, 0.0])]
-
+      transform_train_list = transform_train_list +  [RandomErasing(probability = args.erasing_p, mean=[0.0, 0.0, 0.0])]
+    
+    transform_train = T.Compose(transform_train_list)
+    
     pin_memory = True if use_gpu else False
 
     trainloader = DataLoader(
