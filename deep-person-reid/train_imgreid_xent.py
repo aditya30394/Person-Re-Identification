@@ -153,7 +153,7 @@ def main():
     ])
     
     if args.erasing_p>0:
-      transform_train_list = transform_train_list +  [RandomErasing(probability = args.erasing_p, mean=[0.0, 0.0, 0.0])]
+      transform_train = transform_train +  [RandomErasing(probability = args.erasing_p, mean=[0.0, 0.0, 0.0])]
 
     pin_memory = True if use_gpu else False
 
