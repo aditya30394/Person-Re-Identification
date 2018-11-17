@@ -11,19 +11,19 @@ import cv2
 from matplotlib import pyplot as plt
 import tensorflow as tf
 import os,sys
+from sklearn.cluster import KMeans
+from sklearn.metrics import pairwise_distances_argmin_min
 
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 #Function to load image and give its tensor form
-#imageList stores the pixels of the image, after reshaping the matrix into a vector
+#imageList stores the name of the image, Later after clustering, this will be used to get the cannonical pose
 def load_image(image_path, imageList, transform=None):
     """Load an image and convert it to a torch tensor."""
     image = Image.open(image_path)
     
-    img = cv2.imread(image_path)
-    
-    imageList.append(img.reshape((-1)))
+    imageList.append(image_path)
     if transform:
         image = transform(image).unsqueeze(0)
     
@@ -58,12 +58,11 @@ def main(config):
                              std=(0.229, 0.224, 0.225))])
     
     #This path contains all the pose images generated
-    images_path = os.listdir(os.path.join(os.getcwd(),'poses_trial'))
+    images_path = os.listdir(os.path.join(os.getcwd(),'poses'))
     Z = []
     imageList = []
     for im in images_path:
-        content = load_image('poses_trial/'+im, imageList, transform)
-        #imageList.append(content)
+        content = load_image('poses/'+im, imageList, transform)
         vgg = VGGNet().to(device).eval()
         #Gives the feature map
         content_features = vgg(content)
@@ -79,38 +78,25 @@ def main(config):
         #Z will be a list, where columns represent the features, and each row represents one image
         Z.append(feature)
     Z = np.float32(Z)
-    #print(imageList)
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
     K = 8
+    print("###############Starting the clustering###########################")
     ret,label,center=cv2.kmeans(Z,K,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
     
-    label_list = []
-    for i in range(0,K):
-        label_list.append(np.where(label == i)[0])
+    #closest will have the image closest to each cluster center in the feature space
+    closest, closest_distances = pairwise_distances_argmin_min(center, Z)
     
-    final_image = []
-    dimension = [128,64,3]
-    for temp in label_list:
-        print(temp)
-        var = [0] * len(imageList[0])
-        for k in temp:
-            print(k)
-            print(imageList[k].shape)
-            var = var + imageList[k]
-        var = var/k
-        final_image.append(var)
-    j = 1
-    for image in final_image:
-        print('final image shape before reshape is',image.shape)
-        image = image.reshape(dimension)
-        print('final image shape after reshape is',image.shape)
-        out_name = 'output_'+'j.png'
+    #cannonical pose images will be stored in the path cannonical_poses
+    if not os.path.exists('cannonical_poses'):
+        os.makedirs('cannonical_poses')
+    j=1
+    for index in closest:
+        image = cv2.imread(imageList[index])
+        out_name = 'cannonical_poses/'+'cannonical_'+str(j)+'.png'
         cv2.imwrite(out_name,image)
-        j = j+1    
-            
+        j=j+1
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     config = parser.parse_args()
-    #print(config)
     main(config)

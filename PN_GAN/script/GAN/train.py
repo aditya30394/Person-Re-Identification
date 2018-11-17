@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 # Save model
 def save_model(epoch, path, nets, optimizers, net_name):
     netG, netD = nets
+    print(net_name)
     optimizer_G, optimizer_D = optimizers
     print ("Saving model ------------------------------->")
     if not os.path.exists(os.path.join(path, net_name)):
@@ -219,6 +220,7 @@ def train(train_file, val_file, nets, optimizers, schedulers, summary, criterion
         # (7) Save models per epoch
         # #######################################################
         MODEL_PATH = os.path.join(cfg.FILE_PATH, 'model')
+        print(MODEL_PATH)
         save_model(epoch, MODEL_PATH, nets, optimizers, cfg.NET)
 
     summary.close()
