@@ -58,7 +58,7 @@ def main(config):
                              std=(0.229, 0.224, 0.225))])
     
     #This path contains all the pose images generated
-    images_path = os.listdir(os.path.join(os.getcwd(),'poses'))
+    images_path = os.listdir(os.path.join(os.getcwd(),'Person-Re-Identification/PN_GAN/script/poses'))
     Z = []
     imageList = []
     for im in images_path:
