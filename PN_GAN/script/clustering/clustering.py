@@ -62,7 +62,7 @@ def main(config):
     Z = []
     imageList = []
     for im in images_path:
-        content = load_image('poses/'+im, imageList, transform)
+        content = load_image('/scratch/user/viky1712/Person-Re-Identification/PN_GAN/script/poses/'+im, imageList, transform)
         vgg = VGGNet().to(device).eval()
         #Gives the feature map
         content_features = vgg(content)
