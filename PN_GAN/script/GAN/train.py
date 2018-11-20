@@ -205,6 +205,10 @@ def train(train_file, val_file, nets, optimizers, schedulers, summary, criterion
         # #######################################################
         netG.eval()
         PATH = os.path.join(cfg.FILE_PATH, 'images')
+        
+        if not os.path.exists(PATH):
+            os.mkdir(PATH)
+        
         for _, (src_img, tgt_img, pose) in enumerate(val_loader):
             src_img = Variable(src_img, volatile=True).cuda()
             pose = Variable(pose, volatile=True).cuda()

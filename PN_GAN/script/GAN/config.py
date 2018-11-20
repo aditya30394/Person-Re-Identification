@@ -5,7 +5,7 @@ __C = edict()
 cfg = __C
 
 # Other options
-__C.NET = 'NET_NAME'
+__C.NET = 'GAN'
 __C.GPU_ID = '0'
 __C.NUM_CLASS = 751
 __C.DEBUG = False
@@ -21,7 +21,7 @@ __C.TRAIN.LR_DECAY = 10
 __C.TRAIN.MAX_EPOCH = 20
 
 __C.TRAIN.DISPLAY = 100
-__C.TRAIN.BATCH_SIZE = 32
+__C.TRAIN.BATCH_SIZE = 8
 __C.TRAIN.NUM_WORKERS = 32
 
 # GAN options
