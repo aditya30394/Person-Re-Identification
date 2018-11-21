@@ -58,11 +58,12 @@ def main(config):
                              std=(0.229, 0.224, 0.225))])
     
     #This path contains all the pose images generated
-    images_path = os.listdir(os.path.join(os.getcwd(),'Person-Re-Identification/PN_GAN/script/poses'))
+    #here the current directory will be script
+    images_path = os.listdir(os.path.join(os.getcwd(),'/poses'))
     Z = []
     imageList = []
     for im in images_path:
-        content = load_image('/scratch/user/viky1712/Person-Re-Identification/PN_GAN/script/poses/'+im, imageList, transform)
+        content = load_image('/scratch/user/akhila1012/Person-Re-Identification/PN_GAN/script/poses/'+im, imageList, transform)
         vgg = VGGNet().to(device).eval()
         #Gives the feature map
         content_features = vgg(content)
