@@ -9,6 +9,7 @@ import argparse
 import os.path as osp
 import numpy as np
 import pickle
+import scipy.io
 
 import torch
 import torch.nn as nn
@@ -345,7 +346,8 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20], retur
         q_camids = np.asarray(q_camids)
 
         print("Extracted features for query set, obtained {}-by-{} matrix".format(qf.size(0), qf.size(1)))
-
+        query_features = {'features':qf.numpy(),'pids':q_pids,'camids':q_camids}
+        scipy.io.savemat('feature_val_query.mat',query_features)
         gf, g_pids, g_camids = [], [], []
         end = time.time()
         for batch_idx, (imgs, pids, camids) in enumerate(galleryloader):
@@ -364,7 +366,8 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20], retur
         g_camids = np.asarray(g_camids)
 
         print("Extracted features for gallery set, obtained {}-by-{} matrix".format(gf.size(0), gf.size(1)))
-
+        gallery_features = {'features':gf.numpy(),'pids':g_pids,'camids':g_camids}
+        scipy.io.savemat('feature_val_gallery.mat',gallery_features)
     print("==> BatchTime(s)/BatchSize(img): {:.3f}/{}".format(batch_time.avg, args.test_batch))
 
     m, n = qf.size(0), gf.size(0)
