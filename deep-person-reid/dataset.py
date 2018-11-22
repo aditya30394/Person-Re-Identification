@@ -141,3 +141,26 @@ class Market_test():
 
     def __len__(self):
         return len(self.data)
+
+class Pose_Loader():
+    def __init__(self, pose_path, transform, loader):
+        # poses that we wanna use
+        poses = os.listdir(pose_path)
+
+        data = []
+        for p in poses: 
+            data.append(p)
+
+        self.data = data
+        self.pose_path = pose_path
+        self.loader = loader
+        self.transform = transform
+
+    def __getitem__(self, index):
+        pose = self.data[index]
+        pose = self.loader(os.path.join(self.pose_path, pose))
+        pose =self.transform(pose)
+        return pose
+
+    def __len__(self):
+        return len(self.data)

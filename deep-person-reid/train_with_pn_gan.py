@@ -37,6 +37,7 @@ from functools import partial
 #PN GAN code integration
 from torch.autograd import Variable
 import network
+import dataset
 from config import cfg
 
 # Load Network
@@ -140,21 +141,15 @@ parser.add_argument('--use_gan', action='store_true',
 # global variables
 args = parser.parse_args()
 best_rank1 = -np.inf
-pn_gan = ''
-poses = []
+pn_gan=''
+poses =''
 
-def initialize_PN_GAN();
+def initialize_PN_GAN():
     model_path = './G_2.pkl'
     pn_gan = load_network(model_path)
-    pose_path='./poses/'
-    pose_imgs=os.listdir(pose_path)
-    poses=[]
-    
-    for p in pose_imgs:
-        p_transformed = dataset.val_transform(dataset.val_loader(p))
-        poses.append(p_transformed)
-
-    return pn_gan[0], poses    
+    pose_data = dataset.Pose_Loader(pose_path='./poses/',transform=dataset.val_transform, loader=dataset.val_loader)
+    pin_memory = True if use_gpu else False    
+    return pn_gan[0], DataLoader(pose_data,batch_size=1,shuffle=False,num_workers=1,pin_memory=pin_memory)    
 
 def main():
     global best_rank1
@@ -333,7 +328,8 @@ def train(epoch, model, criterion, optimizer, trainloader, use_gpu, freeze_bn=Fa
     losses = AverageMeter()
     batch_time = AverageMeter()
     data_time = AverageMeter()
-
+    global pn_gan
+    global poses
     model.train()
 
     if freeze_bn or args.freeze_bn:
@@ -346,6 +342,26 @@ def train(epoch, model, criterion, optimizer, trainloader, use_gpu, freeze_bn=Fa
         if use_gpu:
             imgs, pids = imgs.cuda(), pids.cuda()
         
+        if args.use_gan:
+            print("====================POSE START ====================\n")
+            for pose_idx, pose_img in enumerate(poses):
+                if use_gpu:
+                    pose_img = pose_img.cuda()
+
+                tgt_img = pn_gan(imgs,pose_img)
+                outputs = model(tgt_img)
+                if isinstance(outputs, tuple):
+                    loss = DeepSupervision(criterion, outputs, pids)
+                else:
+                    loss = criterion(outputs, pids)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                losses.update(loss.item(), pids.size(0))
+                print('Pose{0} '.format(pose_idx))
+            print("====================POSE END ====================\n")
+        
         outputs = model(imgs)
         if isinstance(outputs, tuple):
             loss = DeepSupervision(criterion, outputs, pids)
@@ -355,9 +371,9 @@ def train(epoch, model, criterion, optimizer, trainloader, use_gpu, freeze_bn=Fa
         loss.backward()
         optimizer.step()
 
-        batch_time.update(time.time() - end)
-
         losses.update(loss.item(), pids.size(0))
+    
+        batch_time.update(time.time() - end)
 
         if (batch_idx + 1) % args.print_freq == 0:
             print('Epoch: [{0}][{1}/{2}]\t'
