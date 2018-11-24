@@ -11,6 +11,8 @@ import network
 import dataset
 import time
 import matplotlib.pyplot as plt
+import sys
+import logger
 
 
 # Save model
@@ -136,6 +138,18 @@ def train(train_file, val_file, nets, optimizers, schedulers, summary, criterion
     optimizer_G, optimizer_D = optimizers
     scheduler_G, scheduler_D = schedulers
     criterionGAN, criterionIdt = criterion
+    
+    if os.path.exists('./model/GAN/G_2.pkl'):
+        print('===========REUSING EARLIER RESULT============')
+        checkpoint = torch.load('./model/GAN/G_2.pkl')
+        netG.load_state_dict(checkpoint['state_dict'])
+        optimizer_G.load_state_dict(checkpoint['optimizer'])
+        checkpoint = torch.load('./model/GAN/D_2.pkl')
+        netD.load_state_dict(checkpoint['state_dict'])
+        optimizer_D.load_state_dict(checkpoint['optimizer'])
+        netG.train()
+        netD.train()
+
     count = 0
     for epoch in range(1, cfg.TRAIN.MAX_EPOCH+1):
         scheduler_G.step()
@@ -231,6 +245,7 @@ def train(train_file, val_file, nets, optimizers, schedulers, summary, criterion
 
 
 def main():
+    sys.stdout = logger.Logger('./log_GAN_ep2.txt')
     train_file, val_file = load_data()
     nets = load_network()
     optimizers, schedulers, summary = Optimizer(nets)
