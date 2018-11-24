@@ -88,9 +88,9 @@ parser.add_argument('--max-epoch', default=60, type=int,
                     help="maximum epochs to run")
 parser.add_argument('--start-epoch', default=0, type=int,
                     help="manual epoch number (useful on restarts)")
-parser.add_argument('--train-batch', default=32, type=int,
+parser.add_argument('--train-batch', default=1, type=int,
                     help="train batch size")
-parser.add_argument('--test-batch', default=100, type=int,
+parser.add_argument('--test-batch', default=1, type=int,
                     help="test batch size")
 parser.add_argument('--lr', '--learning-rate', default=0.0003, type=float,
                     help="initial learning rate")
@@ -147,7 +147,8 @@ poses =''
 def initialize_PN_GAN():
     model_path = './G_2.pkl'
     pn_gan = load_network(model_path)
-    pose_data = dataset.Pose_Loader(pose_path='./poses/',transform=dataset.val_transform, loader=dataset.val_loader)
+    pose_data = dataset.Pose_Loader(pose_path='./poses/',transform=dataset.val_transform(), loader=dataset.val_loader)
+    use_gpu = torch.cuda.is_available()
     pin_memory = True if use_gpu else False    
     return pn_gan[0], DataLoader(pose_data,batch_size=1,shuffle=False,num_workers=1,pin_memory=pin_memory)    
 
@@ -205,7 +206,7 @@ def main():
 
     trainloader = DataLoader(
         ImageDataset(dataset.train, transform=transform_train),
-        batch_size=args.train_batch, shuffle=True, num_workers=args.workers,
+        batch_size=1, shuffle=True, num_workers=args.workers,
         pin_memory=pin_memory, drop_last=True,
     )
 
@@ -343,12 +344,10 @@ def train(epoch, model, criterion, optimizer, trainloader, use_gpu, freeze_bn=Fa
             imgs, pids = imgs.cuda(), pids.cuda()
         
         if args.use_gan:
-            print("====================POSE START ====================\n")
             for pose_idx, pose_img in enumerate(poses):
                 if use_gpu:
-                    pose_img = pose_img.cuda()
-
-                tgt_img = pn_gan(imgs,pose_img)
+                    pose_img = Variable(pose_img).cuda()
+                tgt_img = pn_gan(Variable(imgs).cuda(),pose_img)
                 outputs = model(tgt_img)
                 if isinstance(outputs, tuple):
                     loss = DeepSupervision(criterion, outputs, pids)
@@ -359,8 +358,6 @@ def train(epoch, model, criterion, optimizer, trainloader, use_gpu, freeze_bn=Fa
                 optimizer.step()
 
                 losses.update(loss.item(), pids.size(0))
-                print('Pose{0} '.format(pose_idx))
-            print("====================POSE END ====================\n")
         
         outputs = model(imgs)
         if isinstance(outputs, tuple):
@@ -374,7 +371,7 @@ def train(epoch, model, criterion, optimizer, trainloader, use_gpu, freeze_bn=Fa
         losses.update(loss.item(), pids.size(0))
     
         batch_time.update(time.time() - end)
-
+        
         if (batch_idx + 1) % args.print_freq == 0:
             print('Epoch: [{0}][{1}/{2}]\t'
                   'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
