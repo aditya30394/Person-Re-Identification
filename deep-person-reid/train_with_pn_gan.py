@@ -90,7 +90,7 @@ parser.add_argument('--start-epoch', default=0, type=int,
                     help="manual epoch number (useful on restarts)")
 parser.add_argument('--train-batch', default=1, type=int,
                     help="train batch size")
-parser.add_argument('--test-batch', default=1, type=int,
+parser.add_argument('--test-batch', default=100, type=int,
                     help="test batch size")
 parser.add_argument('--lr', '--learning-rate', default=0.0003, type=float,
                     help="initial learning rate")
@@ -206,7 +206,7 @@ def main():
 
     trainloader = DataLoader(
         ImageDataset(dataset.train, transform=transform_train),
-        batch_size=1, shuffle=True, num_workers=args.workers,
+        batch_size=args.train_batch, shuffle=True, num_workers=args.workers,
         pin_memory=pin_memory, drop_last=True,
     )
 
