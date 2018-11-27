@@ -76,9 +76,14 @@ def extractor(model, dataloader):
     print(type(dataloader))
     for batch, sample in enumerate((dataloader)):
         names, images = sample['name'], sample['img']
+        n, c, h, w = images.size()
         with torch.no_grad():
-            ff = model(Variable(images.cuda())).data.cpu()
+            ff = torch.FloatTensor(n,2048).zero_()
+            ff = ff+ model(Variable(images.cuda())).data.cpu()
+            print(ff.shape)
             ff = ff + model(Variable(fliplr(images).cuda())).data.cpu()
+            print(ff.shape)
+            print(type(ff))
             ff = ff.div(torch.norm(ff, p=2, dim=1, keepdim=True).expand_as(ff))
             test_names = test_names + names
             test_features = torch.cat((test_features, ff), 0)
@@ -87,7 +92,7 @@ def extractor(model, dataloader):
 #test transform is 
 def main():
     transform_test = T.Compose([
-        T.Resize((256, 128)),
+        T.Resize((288,144),interpolation=3),
         T.ToTensor(),
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
