@@ -21,3 +21,6 @@ https://drive.google.com/open?id=1Gm7hpF3HoG2Xt0WV92Wi07U428BH8B1q
 Query: https://drive.google.com/open?id=1StnqZt9MOqiyUYnf_RfhBGXHWQiFgLpz
 
 Gallery: https://drive.google.com/open?id=1jeoQyxqtRW07M1Shbe4pt9Aw3e-m1icY
+
+# GAN result
+![Result after 10 epochs](https://github.tamu.edu/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_10.png)
