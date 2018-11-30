@@ -145,12 +145,12 @@ pn_gan=''
 poses =''
 
 def initialize_PN_GAN():
-    model_path = './G_2.pkl'
+    model_path = './G_12.pkl'
     pn_gan = load_network(model_path)
     pose_data = dataset.Pose_Loader(pose_path='./poses/',transform=dataset.val_transform(), loader=dataset.val_loader)
     use_gpu = torch.cuda.is_available()
     pin_memory = True if use_gpu else False    
-    return pn_gan[0], DataLoader(pose_data,batch_size=1,shuffle=False,num_workers=1,pin_memory=pin_memory)    
+    return pn_gan[0], DataLoader(pose_data,batch_size=8,shuffle=False,num_workers=1,pin_memory=pin_memory)    
 
 def main():
     global best_rank1
@@ -297,6 +297,12 @@ def main():
         
         scheduler.step()
         
+        if use_gpu:
+            state_dict = model.module.state_dict()
+        else:
+            state_dict = model.state_dict()
+        torch.save(state_dict,'checkpoint_self_p' + str(epoch + 1) + '.pth.tar')
+ 
         if (epoch + 1) > args.start_eval and args.eval_step > 0 and (epoch + 1) % args.eval_step == 0 or (epoch + 1) == args.max_epoch:
             print("==> Test")
             rank1 = test(model, queryloader, galleryloader, use_gpu)
@@ -332,7 +338,7 @@ def train(epoch, model, criterion, optimizer, trainloader, use_gpu, freeze_bn=Fa
     global pn_gan
     global poses
     model.train()
-
+    
     if freeze_bn or args.freeze_bn:
         model.apply(set_bn_to_eval)
 
@@ -379,7 +385,6 @@ def train(epoch, model, criterion, optimizer, trainloader, use_gpu, freeze_bn=Fa
                   'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
                    epoch + 1, batch_idx + 1, len(trainloader), batch_time=batch_time,
                    data_time=data_time, loss=losses))
-        
         end = time.time()
 
 
