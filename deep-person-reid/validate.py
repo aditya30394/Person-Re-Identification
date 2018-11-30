@@ -19,9 +19,8 @@ from torchreid import models
 from torchreid import data_manager
 from PIL import Image
 from torch.autograd import Variable
-from model import ft_net
 
-parser = argparse.ArgumentParser(description='For writing the validation features')
+parser = argparse.ArgumentParser(description='For writing the validation and test set features to mat files')
 
 parser.add_argument('-a', '--arch', type=str, default='resnet50', choices=models.get_names())
 args = parser.parse_args()
@@ -44,6 +43,7 @@ def read_image(img_path):
 class Dataset(Dataset):
     def __init__(self, path, transform):
         self.dir = path
+        print(self.dir)
         self.image = [f for f in os.listdir(self.dir) if f.endswith('png')]
         self.transform = transform
 
@@ -58,73 +58,47 @@ class Dataset(Dataset):
 
         return {'name': name.replace('.png', ''), 'img': img}
 
-def load_network(network):
-    print(type(network))
-    save_path = os.path.join('./model','net_last.pth')
-    print(save_path)
-    network.load_state_dict(torch.load(save_path))
-    return network
-
 def extractor(model, dataloader):
     def fliplr(img):
         inv_idx = torch.arange(img.size(3) - 1, -1, -1).long()  # N x C x H x W
         img_flip = img.index_select(3, inv_idx)
         return img_flip
-
     test_names = []
     test_features = torch.FloatTensor()
-    print(type(dataloader))
+
     for batch, sample in enumerate((dataloader)):
         names, images = sample['name'], sample['img']
         n, c, h, w = images.size()
         with torch.no_grad():
             ff = torch.FloatTensor(n,2048).zero_()
             ff = ff+ model(Variable(images.cuda())).data.cpu()
-            print(ff.shape)
             ff = ff + model(Variable(fliplr(images).cuda())).data.cpu()
-            print(ff.shape)
-            print(type(ff))
             ff = ff.div(torch.norm(ff, p=2, dim=1, keepdim=True).expand_as(ff))
             test_names = test_names + names
             test_features = torch.cat((test_features, ff), 0)
 
     return test_names, test_features
-#test transform is 
+#test transform is
 def main():
     transform_test = T.Compose([
-        T.Resize((288,144),interpolation=3),
+        T.Resize((256,128)),
         T.ToTensor(),
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
-    print("I am in the main")
     use_gpu = torch.cuda.is_available()
-    #model = torch.load(os.path.join('./model','best_model.pth.tar'))
-    #print(type(model))
-    #model.eval()
-    #model = models.init_model(name=args.arch, num_classes=751, loss={'xent'})
-    #if use_gpu:
-    #    model = nn.DataParallel(model).cuda()
-    #checkpoint = torch.load(os.path.join('./model','net_last.pth'))
-    #save_path = os.path.join('./model','net_last.pth')
-    #model.load_state_dict(checkpoint['state_dict'])
-    #model.load_state_dict(torch.load(save_path))
-    #model = torch.load(os.path.join('./model','net_last.pth'))
-    #if use_gpu:
-    #    model = nn.DataParallel(model).cuda()
-    #model.to(device)
-    #model_structure = models.init_model(name=args.arch, num_classes=751, loss={'xent'})
-    model_structure = ft_net(751)
-    model=load_network(model_structure)
-    model.model.fc = nn.Sequential()
+    model = models.init_model(name=args.arch, num_classes=751, loss={'xent'})
+    checkpoint = torch.load(os.path.join('./model','best_model.pth.tar'))
+    model.load_state_dict(checkpoint['state_dict'])
     model.classifier = nn.Sequential()
-    model = model.eval()
     if use_gpu:
-        model = model.cuda()
-    for subset in ['query', 'gallery']:
-        print(subset)
-        test_names, test_features = extractor(model, DataLoader(Dataset(subset,transform=transform_test)))
-        results = {'names': test_names, 'features': test_features.numpy()}
-        scipy.io.savemat(os.path.join('log_dir', 'feature_val_%s.mat' % (subset)), results)
+        model = nn.DataParallel(model).cuda()
+    model.eval()
+    for dataset in ['val','test']:
+
+        for subset in ['query', 'gallery']:
+            test_names, test_features = extractor(model, DataLoader(Dataset(dataset+'/'+subset,transform=transform_test)))
+            results = {'names': test_names, 'features': test_features.numpy()}
+            scipy.io.savemat(os.path.join('log_dir', 'feature_%s_%s.mat' % (dataset,subset)), results)
 
 
 if __name__ == "__main__":
