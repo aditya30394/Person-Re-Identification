@@ -23,4 +23,8 @@ Query: https://drive.google.com/open?id=1StnqZt9MOqiyUYnf_RfhBGXHWQiFgLpz
 Gallery: https://drive.google.com/open?id=1jeoQyxqtRW07M1Shbe4pt9Aw3e-m1icY
 
 # GAN result
+Output after 10th epoch <br>
 ![Result after 10 epochs](https://github.tamu.edu/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_10.png)
+
+Output after 12th epoch <br>
+![Result after 12 epochs](https://github.tamu.edu/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_12.png)
