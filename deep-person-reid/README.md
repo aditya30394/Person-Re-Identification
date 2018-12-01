@@ -1,5 +1,23 @@
-# deep-person-reid
+# Deep-Person-ReID
 [PyTorch](http://pytorch.org/) implementation of deep person re-identification models.
+
+# Pose Normalized Training
+use the option <b>--use_gan</b> to train using GAN using the script train_with_pn_gan.py
+
+<b>NOTE:</b> The GAN model should be present in the current directory. Change the name of model at line 148 in train_with_pn_gan.py (Eg: G_12.pkl)
+
+<b>Pre-trained GAN models can be downloaded from here: </b>
+
+GAN : [Pre-Trained GAN](https://drive.google.com/file/d/1UTpzvsK2Ejn0cy896F9mSaLm3K3t5x6R/view?usp=sharing)
+
+Descriminator for GAN : [Pre-Trained Descriminator](https://drive.google.com/file/d/1WH_yevUnJucWq3PCfFIP8Qz8yhJNWabN/view?usp=sharing) 
+
+<b>Example command:</b>
+
+<code>python train_with_pn_gan.py -d market1501 -a resnet50 --optim adam --erasing_p 0.5 --lr 0.0003 --max-epoch 60 --stepsize 20 40 --train-batch 8 --test-batch 100 --resume checkpoint_self_after_reset8.pth.tar --save-dir /home/ubuntu/pngan_addition --gpu-devices 0,1 --root /home/ubuntu --use_gan</code> 
+
+<b>NOTE:</b> It is important that the train batch size be 8 because there are 8 poses and the training tensor and the pose tensors should match in dimensions.
+
 
 We support
 - multi-GPU training.
