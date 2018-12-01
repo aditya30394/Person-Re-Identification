@@ -242,23 +242,15 @@ def main():
 
     if args.load_weights and check_isfile(args.load_weights):
         # load pretrained weights but ignore layers that don't match in size
-        checkpoint = torch.load(args.load_weights)
-        pretrain_dict = checkpoint['state_dict']
-        model_dict = model.state_dict()
-        pretrain_dict = {k: v for k, v in pretrain_dict.items() if k in model_dict and model_dict[k].size() == v.size()}
-        model_dict.update(pretrain_dict)
-        model.load_state_dict(model_dict)
+        model = torch.load('')
+        model.eval()
         print("Loaded pretrained weights from '{}'".format(args.load_weights))
 
     if args.resume and check_isfile(args.resume):
-        pickle.load = partial(pickle.load, encoding="latin1")
-        pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
-        checkpoint = torch.load(args.resume, pickle_module=pickle)
-        model.load_state_dict(checkpoint['state_dict'])
-        args.start_epoch = checkpoint['epoch'] + 1
-        best_rank1 = checkpoint['rank1']
-        print("Loaded checkpoint from '{}'".format(args.resume))
-        print("- start_epoch: {}\n- rank1: {}".format(args.start_epoch, best_rank1))
+       checkpoint_saved = torch.load('./checkpoint_self_after_reset8.pth.tar')
+       model.load_state_dict(checkpoint_saved)
+       model.train() 
+       print("Loaded checkpoint from '{}'".format(args.resume))
 
     if use_gpu:
         model = nn.DataParallel(model).cuda()
@@ -301,7 +293,7 @@ def main():
             state_dict = model.module.state_dict()
         else:
             state_dict = model.state_dict()
-        torch.save(state_dict,'checkpoint_self_p' + str(epoch + 1) + '.pth.tar')
+        torch.save(state_dict,'checkpoint_self_after_reset' + str(epoch + 1) + '.pth.tar')
  
         if (epoch + 1) > args.start_eval and args.eval_step > 0 and (epoch + 1) % args.eval_step == 0 or (epoch + 1) == args.max_epoch:
             print("==> Test")
