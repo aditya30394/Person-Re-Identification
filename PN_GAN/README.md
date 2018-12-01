@@ -18,6 +18,12 @@ How to run it:
 
 &ensp; or (2) run 'GAN/evaluate.py' to generate images for specific testing image. The output will be saved in folder 'GAN/test'
 
+# Getting poses using the executable
+
+<code>
+.\bin\OpenPoseDemo.exe --image_dir .\bin\image --face --hand --write_images .\bin\poses --write_images_format png -disable_blending true -display 0
+</code>
+
 
  
 
