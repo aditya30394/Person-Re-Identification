@@ -21,6 +21,12 @@ https://drive.google.com/open?id=1Gm7hpF3HoG2Xt0WV92Wi07U428BH8B1q
 Query: https://drive.google.com/open?id=1StnqZt9MOqiyUYnf_RfhBGXHWQiFgLpz
 
 Gallery: https://drive.google.com/open?id=1jeoQyxqtRW07M1Shbe4pt9Aw3e-m1icY
+# Result feature .mat files
+The extracted features on the test Set are in the folder Result_mat, where the three result set feature files (feature_test_query.mat and feature_test_gallery.mat) are in Result_1, Result_2, Result_3 respectively.
 
 # GAN result
+Output after 10th epoch <br>
 ![Result after 10 epochs](https://github.tamu.edu/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_10.png)
+
+Output after 12th epoch <br>
+![Result after 12 epochs](https://github.tamu.edu/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_12.png)

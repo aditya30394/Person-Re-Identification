@@ -1,28 +1,23 @@
 # PN_GAN
-In current version, we release the codes of PN-GAN and re-id testing . The other parts of our project will be released later.
+We have codes for GAN training and clustering the pose images into 8 clusters to get 8 cannonical pose images here.
+
+# Clustering
+Using OpenPose library, we extracted pose images with 18 pose points for every image in the training dataset of Market1501. We then obtained a set of 8 cannonical poses which are representative of the typical viewpoint and body-configurations exhibited by people. 
+We used VGG-19 pre-trained on the ImageNet ILSVRC-2012 dataset to extract the features of each pose images, and K-means algorithm
+is used to cluster the training pose images into canonical poses. For feature extraction, we used features extracted at the 10th layer of VGG-19 which are of dimension (256,32,16). The images closest to each cluster center are taken as the cannonical pose images.
 
 How to run it:
 
-GAN:</br>
+&ensp;&ensp;(1) run 'clustering/clustering.py' to obtain the cannonical pose images, and these images will be saved in ./cannonical_poses folder. The clustering/clustering.py expects to have all the pose images on training data set in the directory poses/;
+
+# GAN
+
+How to run it:
+
 &ensp;&ensp;(1) run 'GAN/train.py' to train the GAN model. The model and log file will be saved in folder 'GAN/model' and 'GAN/log' respectively. The validate images will be synthesized in 'GAN/images';
 
 &ensp; or (2) run 'GAN/evaluate.py' to generate images for specific testing image. The output will be saved in folder 'GAN/test'
 
-Person re-id:</br>
-&ensp;&ensp;(1) run 'viper_feature.py' to extract features of probe and gallery, the features will be saved in folder '../feature/';
-
-&ensp;&ensp;(2) run 'CMC_viper.py' to compute cmc scores with python code, it will output three kinds of results: </br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  - avg: 8 pose features are fused by average operation </br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  - max: 8 pose features are fused by maximum operation </br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  - concat: 8 pose features are fused by concatenation operation 
-
-&ensp;&ensp;(3) (optional) run 'Market-1501_baseline/zzd_evaluation_res_faster.m' to compute cmc scores with matlab code. You can modify the code in line 93 to obtain different result of each metric learning (e.g. 'dist_avg.mat', 'dist_max.mat', or 'dist_concat.mat'). It should get the same results with step 2.
-
-	  
-	 	 
-#Acknowledgment:
-
-&ensp;&ensp;The testing codes are modified from Tong Xiao's code, and also refer to Zhedong Zheng's codes.
 
  
 
