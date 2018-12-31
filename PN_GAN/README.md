@@ -10,6 +10,16 @@ How to run it:
 
 &ensp;&ensp;(1) run 'clustering/clustering.py' to obtain the cannonical pose images, and these images will be saved in ./cannonical_poses folder. The clustering/clustering.py expects to have all the pose images on training data set in the directory poses/;
 
+# Result on Market1501
+
+<p align="center">
+<figure align="center">
+  <img src="https://raw.githubusercontent.com/aditya30394/person-re-identification/master/PN_GAN/CannonicalPoses.PNG">
+  <figcaption>Canonical Poses</figcaption>
+</figure>  
+  <br/>
+</p>
+
 # GAN
 
 How to run it:
