@@ -32,3 +32,7 @@ Query: https://drive.google.com/open?id=1StnqZt9MOqiyUYnf_RfhBGXHWQiFgLpz
 Gallery: https://drive.google.com/open?id=1jeoQyxqtRW07M1Shbe4pt9Aw3e-m1icY
 # Result feature .mat files
 The extracted features on the test Set are in the folder Result_mat, where the three result set feature files (feature_test_query.mat and feature_test_gallery.mat) are in Result_1, Result_2, Result_3 respectively.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
