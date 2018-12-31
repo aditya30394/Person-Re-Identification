@@ -13,10 +13,10 @@ Paper Link : http://openaccess.thecvf.com/content_ECCV_2018/papers/Xuelin_Qian_P
 
 # GAN result
 Output after 10th epoch <br>
-![Result after 10 epochs](https://github.tamu.edu/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_10.png)
+![Result after 10 epochs](https://github.com/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_10.png)
 
 Output after 12th epoch <br>
-![Result after 12 epochs](https://github.tamu.edu/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_12.png)
+![Result after 12 epochs](https://github.com/aditya30394/Person-Re-Identification/blob/master/GAN_training_epoch_12.png)
 
 # Random Erasing Data Augmentation
 https://github.com/zhunzhong07/Random-Erasing
