@@ -14,7 +14,7 @@ How to run it:
 
 <p align="center">
 <figure align="center">
-  <img src="https://raw.githubusercontent.com/aditya30394/person-re-identification/master/PN_GAN/CannonicalPoses.PNG">
+  <img src="https://github.com/aditya30394/Person-Re-Identification/blob/master/PN_GAN/CannonicalPoses.PNG">
   <figcaption>Canonical Poses</figcaption>
 </figure>  
   <br/>
